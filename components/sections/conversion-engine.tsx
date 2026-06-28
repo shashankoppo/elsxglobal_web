@@ -59,7 +59,7 @@ export function ConversionEngine() {
           {CTAS.map((c) => (
             <div
               key={c.intent}
-              className="glass-strong rounded-2xl p-7 text-center hover:border-primary/40 transition-all duration-300 hover:-translate-y-1 group"
+              className="liquid-glass-strong rounded-2xl p-7 text-center hover:border-primary/40 transition-all duration-300 hover:-translate-y-1 group"
             >
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 border border-primary/20 mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
                 <c.icon className="h-6 w-6 text-primary" />

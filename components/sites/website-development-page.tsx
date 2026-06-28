@@ -68,7 +68,7 @@ export function WebsiteDevelopmentPage() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {capabilities.map((cap) => (
-              <div key={cap.title} className="card-interactive p-6 group">
+              <div key={cap.title} className="liquid-glass-card p-6 group">
                 <div className="icon-container h-12 w-12 mb-4">
                   <cap.icon className="h-6 w-6 text-primary" />
                 </div>

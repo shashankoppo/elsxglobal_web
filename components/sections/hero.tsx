@@ -36,7 +36,7 @@ export function Hero() {
           {/* Main Content */}
           <div className="lg:col-span-7">
             {/* Eyebrow */}
-            <div className="inline-flex items-center gap-2 mb-6 animate-fade-up glass-badge">
+            <div className="inline-flex items-center gap-2 mb-6 animate-fade-up liquid-glass-badge">
               <Sparkles className="h-3.5 w-3.5" />
               <span className="text-xs font-medium">Enterprise Transformation Partner</span>
             </div>
@@ -78,7 +78,7 @@ export function Hero() {
             {/* Trust Badges */}
             <div className="flex flex-wrap items-center gap-3 animate-fade-up stagger-4">
               {TRUST_BADGES.map((badge) => (
-                <span key={badge} className="glass-badge">
+                <span key={badge} className="liquid-glass-badge">
                   {badge}
                 </span>
               ))}
@@ -91,7 +91,7 @@ export function Hero() {
               {/* Floating accent */}
               <div className="absolute -inset-6 bg-gradient-to-br from-primary/8 to-accent/5 rounded-3xl blur-2xl" />
 
-              <div className="relative glass-panel p-6 sm:p-8">
+              <div className="relative liquid-glass-panel p-6 sm:p-8">
                 <div className="space-y-5">
                   {METRICS.map((metric, idx) => (
                     <div key={metric.label} className="flex items-center gap-4">

@@ -39,7 +39,7 @@ export function WhyElsxglobal() {
         <div className="mt-16 flex flex-col lg:flex-row items-stretch gap-4">
           {PILLARS.map((p, i) => (
             <div key={p.label} className="flex items-center gap-3 flex-1">
-              <div className="glass-panel rounded-xl p-5 flex-1 hover:border-primary/30 transition-colors">
+              <div className="liquid-glass-card rounded-xl p-5 flex-1 hover:border-primary/30 transition-colors">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 border border-primary/20 mb-4">
                   <p.icon className="h-5 w-5 text-primary" />
                 </div>
@@ -60,7 +60,7 @@ export function WhyElsxglobal() {
         {/* Result */}
         <div className="mt-8 flex flex-col items-center">
           <div className="text-border text-xl font-light mb-4">=</div>
-          <div className="glass-strong rounded-xl px-8 py-5 text-center">
+          <div className="liquid-glass-strong rounded-xl px-8 py-5 text-center">
             <p className="text-xs uppercase tracking-wider text-primary mb-1">
               The Result
             </p>
@@ -73,7 +73,7 @@ export function WhyElsxglobal() {
           {DIFFERENTIATORS.map((d, i) => (
             <div
               key={i}
-              className="glass-panel rounded-lg p-4 hover:border-primary/30 transition-colors"
+              className="liquid-glass-subtle rounded-lg p-4 hover:border-primary/30 transition-colors"
             >
               <div className="flex items-start gap-3">
                 <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/15 border border-primary/30 shrink-0 mt-0.5">

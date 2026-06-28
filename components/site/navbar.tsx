@@ -59,7 +59,7 @@ export function Navbar() {
       className={cn(
         'fixed top-0 inset-x-0 z-50 transition-all duration-300',
         scrolled
-          ? 'glass-nav'
+          ? 'liquid-glass-nav'
           : 'bg-transparent'
       )}
     >
@@ -193,7 +193,7 @@ export function Navbar() {
                   className={cn(
                     'block px-4 py-3 text-sm font-medium rounded-xl transition-colors',
                     isActive(item.href)
-                      ? 'text-primary bg-primary/10 glass-badge'
+                      ? 'text-primary bg-primary/10 liquid-glass-badge'
                       : 'text-muted-foreground hover:text-foreground hover:bg-primary/5'
                   )}
                 >

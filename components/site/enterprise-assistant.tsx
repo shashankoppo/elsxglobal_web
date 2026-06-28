@@ -119,7 +119,7 @@ export function EnterpriseAssistant() {
     <>
       {showPrompt && !open && (
         <div className="fixed bottom-24 right-6 z-40 max-w-xs animate-fade-up">
-          <div className="glass-strong rounded-2xl p-4 shadow-xl">
+          <div className="liquid-glass-strong rounded-2xl p-4 shadow-xl">
             <div className="flex items-start gap-2.5">
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 border border-primary/30 shrink-0">
                 <Sparkles className="h-4 w-4 text-primary" />
@@ -164,7 +164,7 @@ export function EnterpriseAssistant() {
 
       {open && (
         <div className="fixed bottom-24 right-6 z-40 w-[calc(100vw-3rem)] max-w-sm animate-scale-in">
-          <div className="glass-strong rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[500px]">
+          <div className="liquid-glass-strong rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[500px]">
             <div className="flex items-center gap-3 px-4 py-3 border-b border-border/60 bg-card/60">
               <div className="relative">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full btn-premium">

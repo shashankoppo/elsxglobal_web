@@ -181,7 +181,7 @@ export function EcosystemOrbit() {
 
           {/* Detail Panel */}
           <div className="lg:col-span-5">
-            <div className="glass-strong rounded-xl p-6 lg:sticky lg:top-28">
+            <div className="liquid-glass-strong rounded-xl p-6 lg:sticky lg:top-28">
               <div className="flex items-center gap-3 mb-5">
                 <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 border border-primary/20">
                   <active.icon className="h-5 w-5 text-primary" />

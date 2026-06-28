@@ -36,7 +36,7 @@ export function WhatsAppButton() {
       }`}
     >
       {tooltip && (
-        <div className="glass-strong rounded-xl px-4 py-2.5 shadow-xl animate-slide-up relative">
+        <div className="liquid-glass-strong rounded-xl px-4 py-2.5 shadow-xl animate-slide-up relative">
           <button
             onClick={() => setTooltip(false)}
             className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-muted/80 text-muted-foreground hover:text-foreground"

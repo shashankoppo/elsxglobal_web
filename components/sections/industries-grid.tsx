@@ -38,7 +38,7 @@ export function IndustriesGrid() {
             <ScrollReveal key={industry.slug} delay={idx * 50} animation="fade-scale">
               <Link
                 href={`/industries/${industry.slug}`}
-                className="card-interactive p-5 flex items-center gap-3 group"
+                className="liquid-glass-card p-5 flex items-center gap-3 group"
               >
                 <div className="icon-container h-10 w-10 shrink-0">
                   <industry.icon className="h-5 w-5 text-primary" />

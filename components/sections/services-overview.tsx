@@ -98,7 +98,7 @@ export function ServicesOverview() {
               <Link
                 href={service.href}
                 className={cn(
-                  'group glass-card p-6 flex flex-col h-full block',
+                  'group liquid-glass-card p-6 flex flex-col h-full block',
                   service.featured && 'border-primary/20'
                 )}
               >

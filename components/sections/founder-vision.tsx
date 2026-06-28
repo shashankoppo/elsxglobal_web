@@ -29,7 +29,7 @@ export function FounderVision() {
           {/* Founder Card */}
           <div className="lg:col-span-5">
             <div className="max-w-sm mx-auto">
-              <div className="glass-strong rounded-xl p-6">
+              <div className="liquid-glass-strong rounded-xl p-6">
                 <div className="aspect-square rounded-lg bg-card border border-border flex items-center justify-center">
                   <div className="text-center">
                     <div className="text-5xl font-semibold text-gradient mb-2">
@@ -98,7 +98,7 @@ export function FounderVision() {
               {FOCUS.map((f) => (
                 <div
                   key={f.label}
-                  className="flex items-center gap-3 glass-panel rounded-lg px-4 py-3 hover:border-primary/30 transition-colors"
+                  className="flex items-center gap-3 liquid-glass-subtle rounded-lg px-4 py-3 hover:border-primary/30 transition-colors"
                 >
                   <f.icon className="h-4 w-4 text-primary shrink-0" />
                   <span className="text-sm font-medium">{f.label}</span>

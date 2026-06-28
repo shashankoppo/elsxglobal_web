@@ -79,7 +79,7 @@ export function DigitalInfrastructure() {
               {TRUST_SIGNALS.map((t) => (
                 <div
                   key={t.label}
-                  className="flex items-center gap-3 rounded-lg glass-panel p-4"
+                  className="flex items-center gap-3 rounded-lg liquid-glass-card p-4"
                 >
                   <t.icon className="h-5 w-5 text-primary shrink-0" />
                   <span className="text-sm font-medium">{t.label}</span>
@@ -88,7 +88,7 @@ export function DigitalInfrastructure() {
             </div>
 
             {/* Global Regions */}
-            <div className="glass-panel rounded-xl p-6">
+            <div className="liquid-glass-panel rounded-xl p-6">
               <h3 className="text-base font-semibold mb-4">Global Infrastructure</h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {REGIONS.map((r) => (
@@ -117,7 +117,7 @@ export function DigitalInfrastructure() {
               <div
                 key={t.name}
                 className={cn(
-                  'glass-panel rounded-xl p-5 transition-colors',
+                  'liquid-glass-card rounded-xl p-5 transition-colors',
                   t.featured && 'border-primary/40 bg-card'
                 )}
               >
@@ -166,7 +166,7 @@ export function DigitalInfrastructure() {
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="glass-panel rounded-lg p-4">
+    <div className="liquid-glass-subtle rounded-lg p-4">
       <p className="text-xs text-muted-foreground mb-1">{label}</p>
       <p className="text-xl font-semibold">{value}</p>
     </div>

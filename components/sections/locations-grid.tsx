@@ -42,7 +42,7 @@ export function LocationsGrid() {
         <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
           {/* India */}
           <ScrollReveal animation="slide-left" delay={100}>
-            <div className="glass-panel p-6">
+            <div className="liquid-glass-panel p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/15">
                   <MapPin className="h-5 w-5 text-primary" />
@@ -54,7 +54,7 @@ export function LocationsGrid() {
                   <Link
                     key={city.slug}
                     href={`/locations/${city.slug}`}
-                    className="glass-card p-3 flex items-center justify-between group"
+                    className="liquid-glass-card p-3 flex items-center justify-between group"
                   >
                     <div>
                       <p className="font-medium text-sm group-hover:text-primary transition-colors">{city.name}</p>
@@ -69,7 +69,7 @@ export function LocationsGrid() {
 
           {/* Global */}
           <ScrollReveal animation="slide-right" delay={200}>
-            <div className="glass-panel p-6">
+            <div className="liquid-glass-panel p-6">
               <div className="flex items-center gap-3 mb-6">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/15">
                   <MapPin className="h-5 w-5 text-accent" />
@@ -81,7 +81,7 @@ export function LocationsGrid() {
                   <Link
                     key={city.slug}
                     href={`/locations/${city.slug}`}
-                    className="glass-card p-3 flex items-center justify-between group"
+                    className="liquid-glass-card p-3 flex items-center justify-between group"
                   >
                     <div>
                       <p className="font-medium text-sm group-hover:text-accent transition-colors">{city.name}</p>
@@ -98,7 +98,7 @@ export function LocationsGrid() {
         <ScrollReveal delay={400} className="text-center mt-10">
           <Link
             href="/locations"
-            className="inline-flex items-center gap-2 glass-button px-5 py-2.5 text-sm"
+            className="inline-flex items-center gap-2 liquid-glass-button px-5 py-2.5 text-sm"
           >
             View all locations
             <ArrowRight className="h-4 w-4" />

@@ -118,7 +118,7 @@ export function SoftwareDevelopmentPage() {
 
           <div className="grid md:grid-cols-2 gap-6">
             {serviceData.capabilities.map((cap) => (
-              <div key={cap.title} className="card-interactive p-6 group">
+              <div key={cap.title} className="liquid-glass-card p-6 group">
                 <h3 className="text-lg font-semibold mb-2 group-hover:text-primary transition-colors">{cap.title}</h3>
                 <p className="text-sm text-muted-foreground mb-4">{cap.description}</p>
                 <div className="flex flex-wrap gap-2">
@@ -145,7 +145,7 @@ export function SoftwareDevelopmentPage() {
 
           <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-4">
             {serviceData.technologies.map((tech) => (
-              <div key={tech.name} className="card-interactive p-4 text-center group">
+              <div key={tech.name} className="liquid-glass-card p-4 text-center group">
                 <p className="font-medium text-sm group-hover:text-primary transition-colors">{tech.name}</p>
                 <p className="text-xs text-muted-foreground mt-1">{tech.category}</p>
               </div>

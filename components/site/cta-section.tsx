@@ -22,7 +22,7 @@ export function CTASection({
 
       {/* Gradient border card */}
       <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        <div className="glass-strong rounded-3xl p-10 sm:p-14 text-center border-gradient animate-glow-pulse">
+        <div className="liquid-glass-strong rounded-3xl p-10 sm:p-14 text-center border-gradient animate-glow-pulse">
           <div className="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider mb-6">
             <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse-glow" />
             <span className="text-gradient-warm">Start Today</span>

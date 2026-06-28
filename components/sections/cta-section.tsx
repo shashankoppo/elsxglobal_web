@@ -18,7 +18,7 @@ export function CTASection() {
 
       <div className="container-wide px-4 sm:px-6 lg:px-8 text-center relative">
         <ScrollReveal>
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full liquid-glass-subtle mb-6">
             <Calendar className="h-4 w-4 text-white" />
             <span className="text-sm font-medium text-white">Free 30-minute consultation</span>
           </div>

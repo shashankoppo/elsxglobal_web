@@ -50,7 +50,7 @@ export function ProcessSection() {
           {STEPS.map((step, index) => (
             <ScrollReveal key={step.title} delay={index * 100}>
               <div className="relative group">
-                <div className="card-interactive p-6 h-full">
+                <div className="liquid-glass-card p-6 h-full">
                   <div className="flex items-center gap-3 mb-4">
                     <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground text-sm font-bold shadow-sm">
                       {index + 1}

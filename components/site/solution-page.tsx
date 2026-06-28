@@ -38,7 +38,7 @@ export function SolutionPage({
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {stats.map((s) => (
-                <div key={s.label} className="glass rounded-2xl p-6 text-center hover:border-primary/30 transition-colors">
+                <div key={s.label} className="liquid-glass rounded-2xl p-6 text-center hover:border-primary/30 transition-colors">
                   <p className="text-3xl font-semibold text-gradient-primary">{s.value}</p>
                   <p className="mt-1 text-sm text-muted-foreground">{s.label}</p>
                 </div>
@@ -52,7 +52,7 @@ export function SolutionPage({
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {features.map((f) => (
-              <div key={f.title} className="glass rounded-2xl p-6 hover:border-primary/40 transition-all duration-300 hover:-translate-y-1 group h-full">
+              <div key={f.title} className="liquid-glass-card rounded-2xl p-6 hover:border-primary/40 transition-all duration-300 hover:-translate-y-1 group h-full">
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 border border-primary/20 mb-4 group-hover:bg-primary/20 transition-colors">
                   <f.icon className="h-5 w-5 text-primary" />
                 </div>
@@ -75,7 +75,7 @@ export function SolutionPage({
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {process.map((p, i) => (
-                <div key={p.title} className="glass rounded-2xl p-6 h-full hover:border-primary/40 transition-colors">
+                <div key={p.title} className="liquid-glass-card rounded-2xl p-6 h-full hover:border-primary/40 transition-colors">
                   <div className="flex items-center gap-3 mb-3">
                     <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/15 text-primary text-sm font-semibold">
                       {i + 1}
@@ -93,7 +93,7 @@ export function SolutionPage({
 
       <section className="relative py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="glass-strong rounded-2xl p-8">
+          <div className="liquid-glass-strong rounded-2xl p-8">
             <h3 className="text-xl font-semibold mb-5">What you get</h3>
             <div className="grid sm:grid-cols-2 gap-3">
               {features.slice(0, 6).map((f) => (

@@ -57,7 +57,7 @@ export function ResourceHubTeaser() {
         <div className="mt-16 grid lg:grid-cols-2 gap-6">
           <Link
             href="/blog"
-            className="group glass-strong rounded-xl p-6 hover:border-primary/30 transition-colors flex flex-col"
+            className="group liquid-glass-strong rounded-xl p-6 hover:border-primary/30 transition-colors flex flex-col"
           >
             <div className="flex items-center justify-between mb-4">
               <span className={`text-xs font-semibold uppercase tracking-wider px-2.5 py-1 rounded ${CATEGORY_COLORS[FEATURED.category]}`}>
@@ -88,7 +88,7 @@ export function ResourceHubTeaser() {
               <Link
                 key={a.title}
                 href="/blog"
-                className="group glass-panel rounded-lg p-4 hover:border-primary/30 transition-colors block"
+                className="group liquid-glass-card rounded-lg p-4 hover:border-primary/30 transition-colors block"
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className={`text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded ${CATEGORY_COLORS[a.category]}`}>

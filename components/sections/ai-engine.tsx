@@ -49,7 +49,7 @@ export function AIEngine() {
         <div className="mt-16 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {STAGES.map((stage, i) => (
             <div key={stage.label} className="relative">
-              <div className="glass-panel rounded-xl p-6 h-full">
+              <div className="liquid-glass-panel rounded-xl p-6 h-full">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 border border-primary/20 mb-4">
                   <stage.icon className="h-5 w-5 text-primary" />
                 </div>
@@ -72,7 +72,7 @@ export function AIEngine() {
             {CAPABILITIES.map((c) => (
               <div
                 key={c.title}
-                className="glass-panel rounded-lg p-5 hover:border-primary/30 transition-colors"
+                className="liquid-glass-card rounded-lg p-5 hover:border-primary/30 transition-colors"
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 border border-primary/20 mb-3">
                   <c.icon className="h-4.5 w-4.5 text-primary" />

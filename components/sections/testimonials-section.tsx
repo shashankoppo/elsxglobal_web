@@ -40,7 +40,7 @@ export function TestimonialsSection() {
         <div className="grid md:grid-cols-3 gap-6">
           {TESTIMONIALS.map((t, idx) => (
             <ScrollReveal key={t.name} delay={idx * 100}>
-              <div className="glass-card p-6 relative group h-full">
+              <div className="liquid-glass-card p-6 relative group h-full">
                 <div className="absolute -top-2 -right-2 w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center opacity-60 group-hover:opacity-100 transition-opacity rotate-12">
                   <Quote className="h-4 w-4 text-primary -rotate-12" />
                 </div>

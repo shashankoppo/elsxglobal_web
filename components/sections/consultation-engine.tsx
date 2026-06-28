@@ -51,7 +51,7 @@ export function ConsultationEngine() {
               {EXPECTATIONS.map((e) => (
                 <div
                   key={e}
-                  className="flex items-center gap-3 glass-panel rounded-lg px-4 py-3"
+                  className="flex items-center gap-3 liquid-glass-subtle rounded-lg px-4 py-3"
                 >
                   <CheckCircle2 className="h-4 w-4 text-success shrink-0" />
                   <span className="text-sm">{e}</span>
@@ -59,7 +59,7 @@ export function ConsultationEngine() {
               ))}
             </div>
 
-            <div className="mt-6 glass-strong rounded-lg p-4 flex items-center gap-3">
+            <div className="mt-6 liquid-glass-strong rounded-lg p-4 flex items-center gap-3">
               <Clock className="h-5 w-5 text-accent shrink-0" />
               <p className="text-sm text-muted-foreground">
                 <span className="text-foreground font-medium">Limited availability:</span>{' '}
@@ -70,7 +70,7 @@ export function ConsultationEngine() {
           </div>
 
           {/* Time selection */}
-          <div className="glass-strong rounded-xl p-6">
+          <div className="liquid-glass-strong rounded-xl p-6">
             <div className="flex items-center gap-2 mb-5">
               <Calendar className="h-5 w-5 text-primary" />
               <h3 className="text-base font-semibold">Select a time</h3>

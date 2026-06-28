@@ -136,7 +136,7 @@ function LocationCard({ location }: { location: Location }) {
   return (
     <Link
       href={`/locations/${location.slug}`}
-      className="card-interactive p-4 group"
+      className="liquid-glass-card p-4 group"
     >
       <div className="flex items-start justify-between">
         <div>

@@ -101,7 +101,7 @@ export function Industries() {
             <Link
               key={ind.name}
               href="/industries"
-              className="group glass-panel rounded-xl p-5 hover:border-primary/40 transition-colors"
+              className="group liquid-glass-card rounded-xl p-5 hover:border-primary/40 transition-colors"
             >
               <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 border border-primary/20 mb-4 group-hover:bg-primary/15 transition-colors">
                 <ind.icon className="h-5 w-5 text-primary" />

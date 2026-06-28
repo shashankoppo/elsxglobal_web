@@ -76,7 +76,7 @@ export function LocationPage({ location }: { location: Location }) {
               <Link
                 key={s.slug}
                 href={`/${s.slug}`}
-                className="card-interactive p-6 group"
+                className="liquid-glass-card p-6 group"
               >
                 <div className="icon-container h-12 w-12 mb-4 group-hover:bg-primary/15 transition-colors">
                   <s.icon className="h-6 w-6 text-primary" />

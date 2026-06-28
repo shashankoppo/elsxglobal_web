@@ -1,125 +1,138 @@
 'use client';
 
-import { Star, ArrowUpRight, Quote } from 'lucide-react';
+import { Star, ArrowRight } from 'lucide-react';
 import { SectionHeading } from '@/components/site/section-heading';
+import { ScrollReveal } from '@/components/ui/scroll-reveal';
+import { useLead } from '@/components/site/lead-context';
 
-const CASE_CARDS = [
+const testimonials = [
   {
-    industry: 'Manufacturing',
-    challenge: 'Manual production tracking, zero predictive capability',
-    solution: 'AI + ERP integration across 4 plants',
-    result: '43% reduction in downtime. ₹2.1Cr saved in Year 1.',
-    metric: '43%',
-    metricLabel: 'Downtime Reduction',
+    name: 'Rahul Mehta',
+    role: 'CTO',
+    company: 'FinEdge Corp',
+    quote: 'ELSxGlobal transformed our entire technology stack. Our operational efficiency increased by 40% within the first quarter.',
+    stars: 5,
   },
   {
-    industry: 'Financial Services',
-    challenge: 'Compliance burden, manual fraud detection',
-    solution: 'RegTech automation + AI fraud detection',
-    result: '₹12M fraud prevented. 62% fewer false positives.',
-    metric: '₹12M',
-    metricLabel: 'Fraud Prevented',
-  },
-  {
-    industry: 'Healthcare',
-    challenge: 'Fragmented patient records, diagnostic delays',
-    solution: 'Unified records platform + predictive diagnostics',
-    result: '2.1x faster diagnostics. 34% higher patient satisfaction.',
-    metric: '2.1x',
-    metricLabel: 'Faster Diagnostics',
-  },
-];
-
-const TESTIMONIALS = [
-  {
-    quote:
-      "ELSxGlobal didn't just implement software — they rethought how our entire operation runs. 18 months later, we're a different company.",
-    name: 'Rajesh Kumar',
-    title: 'COO',
-    company: 'Manufacturing Enterprise',
-  },
-  {
-    quote:
-      "The difference between ELSxGlobal and every other partner we've worked with is that they think like business leaders, not just technologists.",
     name: 'Priya Sharma',
-    title: 'CTO',
-    company: 'Financial Services Firm',
+    role: 'Operations Director',
+    company: 'MedFlow Healthcare',
+    quote: 'The ERP integration they delivered has completely streamlined our hospital operations across 12 locations.',
+    stars: 5,
+  },
+  {
+    name: 'Amit Patel',
+    role: 'CEO',
+    company: 'TechVenture Labs',
+    quote: 'From concept to deployment in 8 weeks. Their AI implementation saved us months of development time.',
+    stars: 5,
+  },
+  {
+    name: 'Sarah Johnson',
+    role: 'VP of Digital',
+    company: 'GlobalRetail Inc',
+    quote: 'Our e-commerce platform conversion rate increased by 2.5x after their redesign. Incredible ROI.',
+    stars: 5,
+  },
+  {
+    name: 'David Chen',
+    role: 'Head of IT',
+    company: 'CloudScale Systems',
+    quote: 'Migrated our entire infrastructure to AWS with zero downtime. Their cloud expertise is unmatched.',
+    stars: 5,
+  },
+  {
+    name: 'Neha Gupta',
+    role: 'Founder',
+    company: 'GrowthPixel Agency',
+    quote: 'Their SEO strategy brought us from page 3 to position 1 on Google for 15 key terms within 6 months.',
+    stars: 5,
   },
 ];
 
 export function SocialProof() {
+  const { openLead } = useLead();
+
   return (
-    <section className="relative py-20 sm:py-28 overflow-hidden">
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section className="section-padding relative overflow-hidden">
+      <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-gradient-to-br from-primary/5 to-transparent rounded-full blur-3xl" />
+      <div className="container-wide px-4 sm:px-6 lg:px-8 relative">
         <SectionHeading
-          eyebrow="Results & Testimonials"
-          title={
-            <>
-              Organizations That Chose
-              <br />
-              <span className="text-gradient">Transformation Over Status Quo</span>
-            </>
-          }
+          eyebrow="Client Success"
+          title="Trusted by Industry Leaders"
+          description="Real results from real clients. Our clients see measurable outcomes within months of engagement."
         />
 
-        <div className="mt-16 grid lg:grid-cols-3 gap-4">
-          {CASE_CARDS.map((c) => (
-            <div
-              key={c.industry}
-              className="group glass-panel rounded-xl p-5 hover:border-primary/30 transition-colors"
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
+          {testimonials.map((t, i) => (
+            <ScrollReveal
+              key={t.name}
+              delay={i * 100}
+              className="block"
+              animation={i < 3 ? 'fade-scale' : 'fade-up'}
             >
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-semibold uppercase tracking-wider text-primary bg-primary/10 px-2.5 py-1 rounded">
-                  {c.industry}
-                </span>
-                <ArrowUpRight className="h-4 w-4 text-muted-foreground/40" />
-              </div>
-              <div className="mb-4">
-                <p className="text-2xl font-semibold">{c.metric}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {c.metricLabel}
+              <div className="group liquid-glass-card rounded-xl p-5 hover:border-primary/30 transition-colors">
+                <div className="flex gap-1 mb-3">
+                  {[...Array(t.stars)].map((_, s) => (
+                    <Star key={s} className="h-4 w-4 text-accent fill-accent" />
+                  ))}
+                </div>
+                <p className="text-sm leading-relaxed mb-4 text-foreground/80">
+                  "{t.quote}"
                 </p>
+                <div className="flex items-center gap-3 pt-3 border-t border-border/40">
+                  <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-medium text-primary">
+                    {t.name[0]}
+                  </div>
+                  <div>
+                    <p className="font-medium text-sm">{t.name}</p>
+                    <p className="text-xs text-muted-foreground">{t.role}, {t.company}</p>
+                  </div>
+                </div>
               </div>
-              <div className="space-y-2 text-sm">
-                <p className="text-muted-foreground">
-                  <span className="text-destructive/80 font-medium">Challenge: </span>
-                  {c.challenge}
-                </p>
-                <p className="text-muted-foreground">
-                  <span className="text-primary font-medium">Solution: </span>
-                  {c.solution}
-                </p>
-                <p className="text-foreground font-medium pt-1">{c.result}</p>
-              </div>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
 
-        <div className="mt-8 grid sm:grid-cols-2 gap-4">
-          {TESTIMONIALS.map((t) => (
-            <div key={t.name} className="glass-strong rounded-xl p-6 relative">
-              <Quote className="absolute top-5 right-5 h-6 w-6 text-primary/15" />
-              <div className="flex gap-0.5 mb-4">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="h-3.5 w-3.5 fill-primary text-primary" />
-                ))}
+        {/* Featured testimonial */}
+        <ScrollReveal delay={600} className="mt-12">
+          <div className="liquid-glass-strong rounded-xl p-6 relative">
+            <div className="absolute top-4 right-4 text-6xl text-primary/5 font-serif leading-none">
+              "
+            </div>
+            <div className="grid md:grid-cols-[1fr_2fr] gap-6 items-center">
+              <div>
+                <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center text-lg font-bold text-primary mb-3">
+                  SK
+                </div>
+                <p className="font-semibold">Sunita Krishnan</p>
+                <p className="text-sm text-muted-foreground">CEO, Krishnan Industries</p>
+                <div className="flex gap-1 mt-2">
+                  {[...Array(5)].map((_, s) => (
+                    <Star key={s} className="h-4 w-4 text-accent fill-accent" />
+                  ))}
+                </div>
               </div>
-              <p className="text-base text-foreground/90 leading-relaxed mb-5">
-                &ldquo;{t.quote}&rdquo;
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 border border-primary/20 text-sm font-semibold text-primary">
-                  {t.name.charAt(0)}
-                </div>
-                <div>
-                  <p className="text-sm font-semibold">{t.name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {t.title}, {t.company}
-                  </p>
-                </div>
+              <div>
+                <p className="text-lg leading-relaxed mb-4">
+                  "We evaluated 12 vendors before choosing ELSxGlobal. Their ability to understand our business needs, not just our technical requirements, was the differentiator. Three years later, they've become our strategic technology partner — handling everything from our ERP to our AI implementations."
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  — Sunita Krishnan, CEO, Krishnan Industries (Manufacturing, ₹500+ Cr revenue)
+                </p>
               </div>
             </div>
-          ))}
+          </div>
+        </ScrollReveal>
+
+        <div className="text-center mt-12">
+          <button
+            onClick={() => openLead('consultation')}
+            className="inline-flex items-center gap-2 text-primary hover:text-primary/80 transition-colors text-sm font-medium"
+          >
+            Read case studies
+            <ArrowRight className="h-4 w-4" />
+          </button>
         </div>
       </div>
     </section>

@@ -43,7 +43,7 @@ export function CommandCenter() {
           description="No more guessing. No more spreadsheet silos. One unified command center for every business function — with real-time intelligence on every metric that matters."
         />
 
-        <div className="mt-16 glass-strong rounded-xl p-6 sm:p-8">
+        <div className="mt-16 liquid-glass-strong rounded-xl p-6 sm:p-8">
           {/* Key Metrics */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {MODULES.slice(0, 4).map((m) => (
