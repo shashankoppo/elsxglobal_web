@@ -1,6 +1,20 @@
+import { Metadata } from 'next';
+import { createMetadata, createSchemaMarkup } from '@/lib/seo';
 import { PageHero } from '@/components/site/page-hero';
 import { CTASection } from '@/components/site/cta-section';
 import { Target, Eye, Heart, Shield, Layers, TrendingUp } from 'lucide-react';
+
+export const metadata: Metadata = createMetadata({
+  title: 'About ELSxGlobal | Enterprise Technology Partner | EvolucentSphere Pvt. Ltd.',
+  description: 'Learn about ELSxGlobal, the flagship division of EvolucentSphere Pvt. Ltd. Founded by Shashank Patel, we are building intelligent enterprises through technology.',
+  keywords: ['about ELSxGlobal', 'EvolucentSphere', 'Shashank Patel', 'enterprise technology company', 'software company India', 'business transformation architect'],
+  canonical: 'https://elsxglobal.com/about/',
+  type: 'website',
+  breadcrumb: [
+    { name: 'Home', url: 'https://elsxglobal.com/' },
+    { name: 'About', url: 'https://elsxglobal.com/about/' },
+  ],
+});
 
 const VALUES = [
   {
@@ -42,15 +56,20 @@ const STATS = [
   { value: '9', label: 'Industries Served' },
 ];
 
-export const metadata = {
-  title: 'About',
-  description:
-    'ELSxGlobal is a Business Transformation Ecosystem helping organizations become faster, smarter, safer, and more scalable.',
-};
-
 export default function AboutPage() {
+  const schemas = createSchemaMarkup({
+    canonical: 'https://elsxglobal.com/about/',
+    breadcrumb: [
+      { name: 'Home', url: 'https://elsxglobal.com/' },
+      { name: 'About', url: 'https://elsxglobal.com/about/' },
+    ],
+  });
+
   return (
     <>
+      {schemas.map((schema, i) => (
+        <script key={i} type="application/ld+json" dangerouslySetInnerHTML={{ __html: schema }} />
+      ))}
       <PageHero
         eyebrow="About ELSxGlobal"
         title={
@@ -87,7 +106,7 @@ export default function AboutPage() {
               {STATS.map((s) => (
                 <div
                   key={s.label}
-                  className="glass rounded-2xl p-6 text-center"
+                  className="liquid-glass rounded-2xl p-6 text-center"
                 >
                   <p className="text-3xl font-semibold text-gradient-primary">
                     {s.value}
@@ -114,7 +133,7 @@ export default function AboutPage() {
             {VALUES.map((v) => (
               <div
                 key={v.title}
-                className="glass rounded-2xl p-6 hover:border-primary/40 transition-all duration-300 hover:-translate-y-1"
+                className="liquid-glass-card rounded-2xl p-6 hover:border-primary/40 transition-all duration-300 hover:-translate-y-1"
               >
                 <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 border border-primary/20 mb-4">
                   <v.icon className="h-5 w-5 text-primary" />
