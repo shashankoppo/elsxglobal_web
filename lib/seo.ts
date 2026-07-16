@@ -1,6 +1,48 @@
 import { Metadata } from 'next';
 
 const BASE_URL = 'https://elsxglobal.com';
+const PARENT_URL = 'https://evolucentsphere.com';
+
+export const parentOrganization = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'EvolucentSphere Pvt. Ltd.',
+  alternateName: 'EvolucentSphere',
+  url: PARENT_URL,
+  logo: `${PARENT_URL}/logo.png`,
+  description: 'India\'s premier technology conglomerate delivering AI-driven BPO, KPO, IT services, and consultancy solutions globally. Founded in 2009, headquartered in Jabalpur, Madhya Pradesh.',
+  foundingDate: '2009',
+  founder: {
+    '@type': 'Person',
+    name: 'Shashank Patel',
+    jobTitle: 'Business Transformation Architect',
+  },
+  contactPoint: {
+    '@type': 'ContactPoint',
+    telephone: '+91-72475-58873',
+    contactType: 'customer service',
+    email: 'contact@evolucentsphere.com',
+    areaServed: 'Worldwide',
+    availableLanguage: ['English', 'Hindi'],
+  },
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Jabalpur, Madhya Pradesh',
+    addressLocality: 'Jabalpur',
+    addressRegion: 'Madhya Pradesh',
+    addressCountry: 'IN',
+  },
+  sameAs: [
+    'https://linkedin.com/company/elsxglobal',
+    'https://twitter.com/elsxglobal',
+    'https://www.instagram.com/elsxglobal',
+    'https://elsxglobal.wordpress.com',
+    'https://elsxtech.blogspot.com',
+  ],
+  areaServed: ['IN', 'US', 'GB', 'AE', 'SG', 'AU', 'CA', 'DE', 'RU'],
+  industry: 'Information Technology and Services',
+  numberOfEmployees: { '@type': 'QuantitativeValue', value: '201-500' },
+};
 
 export const defaultOrganization = {
   '@context': 'https://schema.org',
@@ -14,6 +56,7 @@ export const defaultOrganization = {
   parentOrganization: {
     '@type': 'Organization',
     name: 'EvolucentSphere Pvt. Ltd.',
+    url: PARENT_URL,
   },
   founder: {
     '@type': 'Person',
@@ -23,14 +66,14 @@ export const defaultOrganization = {
   contactPoint: [
     {
       '@type': 'ContactPoint',
-      telephone: '+91-22-XXXX-XXXX',
+      telephone: '+91-72475-58873',
       contactType: 'sales',
       areaServed: 'India',
       availableLanguage: ['English', 'Hindi'],
     },
     {
       '@type': 'ContactPoint',
-      telephone: '+91-80-XXXX-XXXX',
+      telephone: '+91-87704-22622',
       contactType: 'technical support',
       areaServed: 'Worldwide',
       availableLanguage: ['English'],
@@ -41,17 +84,39 @@ export const defaultOrganization = {
     'https://twitter.com/elsxglobal',
     'https://facebook.com/elsxglobal',
     'https://instagram.com/elsxglobal',
+    'https://elsxglobal.wordpress.com',
+    PARENT_URL,
   ],
   address: {
     '@type': 'PostalAddress',
-    streetAddress: 'Business District, Mumbai',
-    addressLocality: 'Mumbai',
-    addressRegion: 'Maharashtra',
+    streetAddress: 'Jabalpur, Madhya Pradesh',
+    addressLocality: 'Jabalpur',
+    addressRegion: 'Madhya Pradesh',
     addressCountry: 'IN',
   },
   areaServed: ['IN', 'US', 'GB', 'AE', 'SG', 'AU', 'CA'],
   industry: 'Software Development',
-  numberOfEmployees: { '@type': 'QuantitativeValue', value: '150' },
+  numberOfEmployees: { '@type': 'QuantitativeValue', value: '201-500' },
+  subOrganization: [
+    {
+      '@type': 'Organization',
+      name: 'ELSxGlobal',
+      url: BASE_URL,
+      description: 'Flagship division — enterprise software, AI, cloud, and digital transformation.',
+    },
+    {
+      '@type': 'Organization',
+      name: 'ELSxSoftwareoverload',
+      url: `${PARENT_URL}/elsxsoftwareoverload`,
+      description: 'Custom software development, SaaS, and cloud solutions division.',
+    },
+    {
+      '@type': 'Organization',
+      name: 'ELSxTech',
+      url: 'https://elsxtech.blogspot.com',
+      description: 'Technology consulting and IT infrastructure services.',
+    },
+  ],
   hasOfferCatalog: {
     '@type': 'OfferCatalog',
     name: 'Enterprise Technology Services',
@@ -524,4 +589,47 @@ export const locations = {
     keywords: ['software development company Toronto', 'IT company Toronto', 'fintech solutions Canada', 'Toronto tech solutions', 'Canada IT services', 'Toronto AI solutions'],
     path: '/locations/toronto',
   },
+};
+
+// EvolucentSphere ecosystem divisions
+export const ecosystemDivisions = [
+  {
+    name: 'ELSxGlobal',
+    url: 'https://elsxglobal.com',
+    description: 'Flagship division — enterprise software, AI, cloud, cybersecurity, and digital transformation.',
+    role: 'Flagship Division',
+  },
+  {
+    name: 'ELSxSoftwareoverload',
+    url: 'https://evolucentsphere.com/elsxsoftwareoverload',
+    description: 'Custom software development, SaaS platforms, and cloud-native solutions.',
+    role: 'Software Division',
+  },
+  {
+    name: 'ELSxTech',
+    url: 'https://elsxtech.blogspot.com',
+    description: 'Technology consulting, IT infrastructure, and managed services.',
+    role: 'Technology Consulting',
+  },
+  {
+    name: 'VaultHost',
+    url: 'https://elsxglobal.com/vaulthost',
+    description: 'Enterprise hosting, cloud infrastructure, and managed WordPress hosting.',
+    role: 'Hosting Infrastructure',
+  },
+];
+
+export const parentCompanyInfo = {
+  name: 'EvolucentSphere Pvt. Ltd.',
+  url: 'https://evolucentsphere.com',
+  founded: '2009',
+  headquarters: 'Jabalpur, Madhya Pradesh, India',
+  valuation: '₹120Cr',
+  targetValuation: '₹500Cr by 2025',
+  employees: '201-500',
+  email: 'contact@evolucentsphere.com',
+  phone1: '+91 72475 58873',
+  phone2: '+91 87704 22622',
+  description: 'India\'s premier technology conglomerate delivering AI-driven BPO, KPO, IT services, software development, and strategic consultancy to enterprises worldwide. Founded in 2009, EvolucentSphere has grown into a multi-division ecosystem serving clients across India, UAE, USA, UK, Singapore, and beyond.',
+  divisions: ecosystemDivisions,
 };

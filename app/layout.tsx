@@ -47,6 +47,11 @@ export const metadata: Metadata = {
   authors: [{ name: 'ELSxGlobal', url: 'https://elsxglobal.com' }],
   creator: 'ELSxGlobal',
   publisher: 'ELSxGlobal',
+  other: {
+    'organization:name': 'ELSxGlobal',
+    'organization:parent': 'EvolucentSphere Pvt. Ltd.',
+    'organization:parent_url': 'https://evolucentsphere.com',
+  },
   formatDetection: {
     email: false,
     address: false,
