@@ -1,5 +1,5 @@
 {
-  "/blog/page": "app/blog/page.js",
+  "/portal/page": "app/portal/page.js",
   "/services/page": "app/services/page.js",
   "/portal/login/page": "app/portal/login/page.js",
   "/vaulthost/vps/page": "app/vaulthost/vps/page.js",
