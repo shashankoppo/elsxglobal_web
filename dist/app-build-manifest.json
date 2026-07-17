@@ -20,6 +20,11 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/bpo-kpo/page.js"
+    ],
+    "/vaulthost/addons/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/vaulthost/addons/page.js"
     ]
   }
 }
