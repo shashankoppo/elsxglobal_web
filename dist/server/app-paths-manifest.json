@@ -2,5 +2,6 @@
   "/page": "app/page.js",
   "/industries/page": "app/industries/page.js",
   "/bpo-kpo/page": "app/bpo-kpo/page.js",
+  "/blog/page": "app/blog/page.js",
   "/vaulthost/addons/page": "app/vaulthost/addons/page.js"
 }
