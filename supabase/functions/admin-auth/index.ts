@@ -32,6 +32,49 @@ Deno.serve(async (req: Request) => {
     const body = await req.json();
     const { action, email, password, name } = body;
 
+    // Setup admin (one-time initialization)
+    if (action === "setup-admin") {
+      const { authUserId, email: setupEmail, fullName } = body;
+      if (!authUserId || !setupEmail) {
+        return new Response(JSON.stringify({ error: "Auth user ID and email required" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Check if any admin already exists
+      const { data: existing } = await supabase
+        .from("admin_users")
+        .select("id")
+        .limit(1);
+
+      if (existing && existing.length > 0) {
+        return new Response(JSON.stringify({ error: "Admin already initialized. Only one setup allowed." }), {
+          status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { error: insertError } = await supabase
+        .from("admin_users")
+        .insert({
+          user_id: authUserId,
+          email: setupEmail.toLowerCase(),
+          full_name: fullName || "Master Admin",
+          role: "super_admin",
+          is_active: true,
+        });
+
+      if (insertError) {
+        return new Response(JSON.stringify({ error: "Failed to create admin record: " + insertError.message }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      return new Response(JSON.stringify({
+        success: true,
+        message: "Master admin account created successfully",
+      }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
     // Login
     if (action === "login") {
       if (!email || !password) {
@@ -147,6 +190,54 @@ Deno.serve(async (req: Request) => {
       return new Response(JSON.stringify({ valid: true }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    }
+
+    // Reply to support ticket (admin)
+    if (action === "reply-ticket") {
+      const { ticketId, message, adminEmail } = body;
+      if (!ticketId || !message) {
+        return new Response(JSON.stringify({ error: "Ticket ID and message required" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { data: ticket, error: ticketError } = await supabase
+        .from("support_tickets")
+        .select("id, user_id")
+        .eq("id", ticketId)
+        .maybeSingle();
+
+      if (ticketError || !ticket) {
+        return new Response(JSON.stringify({ error: "Ticket not found" }), {
+          status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const { error: replyError } = await supabase
+        .from("ticket_replies")
+        .insert({
+          ticket_id: ticketId,
+          user_id: ticket.user_id,
+          sender_type: "admin",
+          message,
+        });
+
+      if (replyError) {
+        return new Response(JSON.stringify({ error: "Failed to insert reply: " + replyError.message }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      await supabase
+        .from("support_tickets")
+        .update({ status: "pending", updated_at: new Date().toISOString() })
+        .eq("id", ticketId);
+
+      return new Response(JSON.stringify({
+        success: true,
+        message: "Reply sent successfully",
+        repliedBy: adminEmail || "admin",
+      }), { headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     // Get dashboard stats

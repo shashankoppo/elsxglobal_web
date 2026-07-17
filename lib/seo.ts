@@ -155,6 +155,19 @@ export interface SEOPageConfig {
     areaServed?: string;
     category?: string;
   };
+  productSchema?: {
+    name: string;
+    description: string;
+    brand?: string;
+    category?: string;
+    offers: Array<{
+      name: string;
+      price: number;
+      priceCurrency?: string;
+      billingDuration?: string;
+      availability?: string;
+    }>;
+  };
   articleSchema?: {
     headline: string;
     image: string;
@@ -199,7 +212,7 @@ export function createMetadata(config: SEOPageConfig): Metadata {
       type: config.type || 'website',
       locale: 'en_US',
       url: config.canonical,
-      siteName: 'ELSxGlobal',
+      siteName: 'ELSxGlobal — India\'s Best Enterprise Tech Partner',
       title: ogTitle,
       description: ogDesc,
       images: [
@@ -235,20 +248,24 @@ export function createMetadata(config: SEOPageConfig): Metadata {
       },
     },
     category: 'technology',
-    classification: 'Enterprise Technology Solutions',
+    classification: 'India\'s Best Enterprise Technology Solutions',
     other: {
-      'og:phone_number': '+91-22-XXXX-XXXX',
-      'og:street-address': 'Business District, Mumbai',
-      'og:locality': 'Mumbai',
-      'og:region': 'Maharashtra',
-      'og:postal-code': '400001',
+      'geo.region': 'IN-MH',
+      'geo.placename': 'Mumbai, India',
+      'geo.position': '19.0760;72.8777',
+      'ICBM': '19.0760, 72.8777',
+      'og:phone_number': '+91-72475-58873',
+      'og:email': 'contact@elsxglobal.com',
+      'og:street-address': 'Jabalpur, Madhya Pradesh',
+      'og:locality': 'Jabalpur',
+      'og:region': 'Madhya Pradesh',
       'og:country-name': 'India',
-      'business:contact_data:street_address': 'Business District, Mumbai',
-      'business:contact_data:locality': 'Mumbai',
-      'business:contact_data:region': 'Maharashtra',
+      'business:contact_data:street_address': 'Jabalpur, Madhya Pradesh',
+      'business:contact_data:locality': 'Jabalpur',
+      'business:contact_data:region': 'Madhya Pradesh',
       'business:contact_data:country_name': 'India',
-      'business:contact_data:phone_number': '+91-22-XXXX-XXXX',
-      'business:contact_data:email': 'info@elsxglobal.com',
+      'business:contact_data:phone_number': '+91-72475-58873',
+      'business:contact_data:email': 'contact@elsxglobal.com',
     },
     ...(config.type === 'article' && {
       verification: {
@@ -256,7 +273,7 @@ export function createMetadata(config: SEOPageConfig): Metadata {
         yandex: 'your-yandex-verification',
         yahoo: 'your-yahoo-verification',
         other: {
-          me: ['info@elsxglobal.com'],
+          me: ['contact@elsxglobal.com'],
         },
       },
     }),
@@ -307,6 +324,11 @@ export function createSchemaMarkup(config: SEOPageConfig): string[] {
         '@type': 'Organization',
         name: config.serviceSchema.provider || 'ELSxGlobal',
         url: BASE_URL,
+        parentOrganization: {
+          '@type': 'Organization',
+          name: 'EvolucentSphere',
+          url: 'https://evolucentsphere.com',
+        },
       },
       ...(config.serviceSchema.areaServed && {
         areaServed: {
@@ -317,6 +339,41 @@ export function createSchemaMarkup(config: SEOPageConfig): string[] {
       ...(config.serviceSchema.category && {
         category: config.serviceSchema.category,
       }),
+    });
+  }
+
+  // Product (for VaultHost tiers)
+  if (config.productSchema) {
+    schemas.push({
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: config.productSchema.name,
+      description: config.productSchema.description,
+      brand: {
+        '@type': 'Brand',
+        name: config.productSchema.brand || 'VaultHost',
+      },
+      ...(config.productSchema.category && {
+        category: config.productSchema.category,
+      }),
+      offers: config.productSchema.offers.map((offer) => ({
+        '@type': 'Offer',
+        name: offer.name,
+        price: offer.price,
+        priceCurrency: offer.priceCurrency || 'INR',
+        availability: offer.availability || 'https://schema.org/InStock',
+        url: config.canonical,
+        seller: {
+          '@type': 'Organization',
+          name: 'ELSxGlobal',
+          url: BASE_URL,
+        },
+      })),
+      isPartOf: {
+        '@type': 'Organization',
+        name: 'EvolucentSphere',
+        url: 'https://evolucentsphere.com',
+      },
     });
   }
 
@@ -389,56 +446,65 @@ export function createSchemaMarkup(config: SEOPageConfig): string[] {
 export const services = {
   software: {
     name: 'Custom Software Development',
-    description: 'Enterprise-grade custom software solutions built with modern technologies. Web applications, mobile apps, API development, and enterprise systems for Indian businesses.',
-    keywords: ['custom software development India', 'enterprise software development Mumbai', 'web application development', 'mobile app development India', 'API development services', 'enterprise software solutions', 'software development company Bangalore'],
+    title: "India's Best Custom Software Development Company | ELSxGlobal",
+    description: "India's best custom software development company. We build enterprise-grade web apps, mobile apps, and API solutions for India's top businesses. Trusted by 500+ enterprises across Mumbai, Bangalore, and Delhi.",
+    keywords: ['custom software development India', 'enterprise software development Mumbai', 'web application development', 'mobile app development India', 'API development services', 'enterprise software solutions', 'software development company Bangalore', "India's best software company"],
     path: '/software',
   },
   website: {
     name: 'Website Development',
-    description: 'High-performance, SEO-optimized websites and e-commerce platforms. Corporate websites, online stores, and web applications built with Next.js and React.',
-    keywords: ['website development company India', 'e-commerce development Mumbai', 'corporate website development', 'WordPress development India', 'Next.js development', 'web design company Bangalore', 'e-commerce website development'],
+    title: "India's Best Website Development Company | ELSxGlobal",
+    description: "India's best website development company. High-performance, SEO-optimized websites and e-commerce platforms. Corporate websites, online stores, and web applications built with Next.js and React.",
+    keywords: ['website development company India', 'e-commerce development Mumbai', 'corporate website development', 'WordPress development India', 'Next.js development', 'web design company Bangalore', 'e-commerce website development', "India's best website development"],
     path: '/website-development',
   },
   ai: {
     name: 'AI & Machine Learning Solutions',
-    description: 'Enterprise AI and machine learning solutions. Predictive analytics, NLP, computer vision, and custom AI models for business intelligence.',
-    keywords: ['AI solutions India', 'machine learning services', 'predictive analytics', 'NLP services India', 'computer vision solutions', 'AI consulting Mumbai', 'business intelligence AI'],
+    title: "India's Best AI & Machine Learning Solutions | ELSxGlobal",
+    description: "India's best AI and machine learning solutions provider. Predictive analytics, NLP, computer vision, and custom AI models for business intelligence. Top AI consulting in Mumbai and Bangalore.",
+    keywords: ['AI solutions India', 'machine learning services', 'predictive analytics', 'NLP services India', 'computer vision solutions', 'AI consulting Mumbai', 'business intelligence AI', "India's best AI company"],
     path: '/ai-solutions',
   },
   cloud: {
     name: 'Cloud Infrastructure & Migration',
-    description: 'Enterprise cloud architecture, migration, and management. AWS, Azure, and GCP solutions with DevOps, CI/CD, and infrastructure as code.',
-    keywords: ['cloud migration services India', 'AWS consulting Mumbai', 'Azure migration services', 'DevOps consulting India', 'infrastructure as code', 'cloud architecture services', 'GCP consulting'],
+    title: "India's Best Cloud Infrastructure & Migration Services | ELSxGlobal",
+    description: "India's best cloud infrastructure and migration services. Enterprise cloud architecture, AWS, Azure, and GCP solutions with DevOps, CI/CD, and infrastructure as code. Top cloud consulting in India.",
+    keywords: ['cloud migration services India', 'AWS consulting Mumbai', 'Azure migration services', 'DevOps consulting India', 'infrastructure as code', 'cloud architecture services', 'GCP consulting', "India's best cloud services"],
     path: '/cloud',
   },
   erp: {
     name: 'ERP & CRM Implementation',
-    description: 'Enterprise ERP and CRM implementation with Odoo, Salesforce, and custom solutions. Business process automation and digital transformation.',
-    keywords: ['ERP implementation India', 'Odoo implementation Mumbai', 'CRM implementation services', 'Salesforce consulting India', 'business process automation', 'digital transformation ERP'],
+    title: "India's Best ERP & CRM Implementation Services | ELSxGlobal",
+    description: "India's best ERP and CRM implementation services. Odoo, Salesforce, and custom solutions. Business process automation and digital transformation for India's top enterprises.",
+    keywords: ['ERP implementation India', 'Odoo implementation Mumbai', 'CRM implementation services', 'Salesforce consulting India', 'business process automation', 'digital transformation ERP', "India's best ERP implementation"],
     path: '/erp-crm',
   },
   cybersecurity: {
     name: 'Cybersecurity Solutions',
-    description: 'Enterprise cybersecurity, compliance, and risk management. Security audits, penetration testing, SOC services, and compliance consulting.',
-    keywords: ['cybersecurity services India', 'penetration testing Mumbai', 'security audit services', 'compliance consulting India', 'SOC services', 'cybersecurity consulting Bangalore'],
+    title: "India's Best Cybersecurity Solutions | ELSxGlobal",
+    description: "India's best cybersecurity solutions. Enterprise security audits, penetration testing, SOC services, and compliance consulting. Top cybersecurity firm in Mumbai and Bangalore.",
+    keywords: ['cybersecurity services India', 'penetration testing Mumbai', 'security audit services', 'compliance consulting India', 'SOC services', 'cybersecurity consulting Bangalore', "India's best cybersecurity company"],
     path: '/cybersecurity',
   },
   digitalMarketing: {
     name: 'Digital Marketing Services',
-    description: 'Results-driven digital marketing. SEO, PPC, social media, content marketing, and performance marketing for Indian businesses.',
-    keywords: ['digital marketing agency India', 'SEO services Mumbai', 'PPC management India', 'social media marketing', 'content marketing services', 'performance marketing', 'search engine optimization'],
+    title: "India's Best Digital Marketing Agency | ELSxGlobal",
+    description: "India's best digital marketing agency. Results-driven SEO, PPC, social media, content marketing, and performance marketing for Indian businesses. Top digital marketing in Mumbai.",
+    keywords: ['digital marketing agency India', 'SEO services Mumbai', 'PPC management India', 'social media marketing', 'content marketing services', 'performance marketing', 'search engine optimization', "India's best digital marketing"],
     path: '/digital-marketing',
   },
   bpo: {
     name: 'Business Process Outsourcing',
-    description: 'KPO and BPO services for Indian and global enterprises. Data processing, customer support, research, and back-office operations.',
-    keywords: ['BPO services India', 'KPO services Mumbai', 'business process outsourcing', 'data processing services', 'customer support outsourcing', 'back office operations India'],
+    title: "India's Best BPO & KPO Services | ELSxGlobal",
+    description: "India's best BPO and KPO services. Data processing, customer support, research, and back-office operations for Indian and global enterprises. Top outsourcing partner in India.",
+    keywords: ['BPO services India', 'KPO services Mumbai', 'business process outsourcing', 'data processing services', 'customer support outsourcing', 'back office operations India', "India's best BPO"],
     path: '/bpo-kpo',
   },
   vaulthost: {
     name: 'VaultHost - Managed Hosting',
-    description: 'Enterprise-grade managed hosting and cloud infrastructure. Dedicated servers, VPS, cloud hosting, and managed WordPress hosting.',
-    keywords: ['managed hosting India', 'cloud hosting Mumbai', 'dedicated server hosting', 'VPS hosting India', 'managed WordPress hosting', 'enterprise hosting solutions'],
+    title: "India's Best Managed Hosting & Cloud Infrastructure | VaultHost",
+    description: "India's best managed hosting and cloud infrastructure. Dedicated servers, VPS, cloud hosting, and managed WordPress hosting. Enterprise-grade hosting from Rs 99/mo.",
+    keywords: ['managed hosting India', 'cloud hosting Mumbai', 'dedicated server hosting', 'VPS hosting India', 'managed WordPress hosting', 'enterprise hosting solutions', "India's best hosting"],
     path: '/vaulthost',
   },
 };

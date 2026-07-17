@@ -9,11 +9,11 @@ import {
   Loader2, Users, CreditCard, Package, DollarSign, TrendingUp,
   Check, X as XIcon, RefreshCw, Eye, ToggleLeft, ToggleRight,
   Plus, Search, AlertCircle,
-  ShieldCheck, ShoppingCart, Globe
+  ShieldCheck, ShoppingCart, Globe, Send, MessageSquare, Database as DbIcon, ChevronDown, ChevronRight
 } from 'lucide-react';
 import Link from 'next/link';
 
-type Tab = 'overview' | 'orders' | 'plans' | 'addons' | 'users' | 'tickets' | 'invoices';
+type Tab = 'overview' | 'orders' | 'plans' | 'addons' | 'users' | 'tickets' | 'invoices' | 'leads';
 
 interface AdminInfo {
   email: string;
@@ -54,6 +54,11 @@ export default function AdminPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
+  const [leads, setLeads] = useState<Record<string, unknown>[]>([]);
+  const [expandedTicket, setExpandedTicket] = useState<string | null>(null);
+  const [ticketReplies, setTicketReplies] = useState<Record<string, unknown>[]>();
+  const [replyText, setReplyText] = useState('');
+  const [replyLoading, setReplyLoading] = useState(false);
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
@@ -128,6 +133,16 @@ export default function AdminPage() {
     setInvoices(data || []);
   }, []);
 
+  const fetchLeads = useCallback(async () => {
+    const supabase = createClient();
+    const { data } = await supabase
+      .from('leads')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .limit(100);
+    setLeads(data || []);
+  }, []);
+
   const fetchUsers = useCallback(async () => {
     const supabase = createClient();
     const { data: orderUsers } = await supabase
@@ -161,7 +176,8 @@ export default function AdminPage() {
     fetchTickets();
     fetchInvoices();
     fetchUsers();
-  }, [router, fetchStats, fetchOrders, fetchPlans, fetchAddons, fetchTickets, fetchInvoices, fetchUsers]);
+    fetchLeads();
+  }, [router, fetchStats, fetchOrders, fetchPlans, fetchAddons, fetchTickets, fetchInvoices, fetchUsers, fetchLeads]);
 
   const handleSignOut = () => {
     sessionStorage.removeItem('admin_token');
@@ -270,6 +286,7 @@ export default function AdminPage() {
     { id: 'users', label: 'Users', icon: Users },
     { id: 'tickets', label: 'Support', icon: LifeBuoy, badge: stats?.openTickets },
     { id: 'invoices', label: 'Invoices', icon: Receipt, badge: stats?.unpaidInvoices },
+    { id: 'leads', label: 'Odoo Leads', icon: DbIcon },
   ];
 
   const filteredOrders = orders.filter((o) => {
@@ -279,6 +296,57 @@ export default function AdminPage() {
     const matchesStatus = statusFilter === 'all' || o.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
+
+  const loadTicketReplies = async (ticketId: string) => {
+    const supabase = createClient();
+    const { data } = await supabase
+      .from('ticket_replies')
+      .select('*')
+      .eq('ticket_id', ticketId)
+      .order('created_at', { ascending: true });
+    setTicketReplies(data || []);
+  };
+
+  const handleTicketExpand = (ticketId: string) => {
+    if (expandedTicket === ticketId) {
+      setExpandedTicket(null);
+      setTicketReplies([]);
+    } else {
+      setExpandedTicket(ticketId);
+      loadTicketReplies(ticketId);
+      setReplyText('');
+    }
+  };
+
+  const sendTicketReply = async (ticketId: string) => {
+    if (!replyText.trim() || !admin) return;
+    setReplyLoading(true);
+    try {
+      const res = await fetch(`${supabaseUrl}/functions/v1/admin-auth`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${supabaseAnonKey}`,
+        },
+        body: JSON.stringify({
+          action: 'reply-ticket',
+          ticketId,
+          message: replyText,
+          adminEmail: admin.email,
+        }),
+      });
+      if (res.ok) {
+        showToast('success', 'Reply sent');
+        setReplyText('');
+        loadTicketReplies(ticketId);
+      } else {
+        showToast('error', 'Failed to send reply');
+      }
+    } catch {
+      showToast('error', 'Failed to send reply');
+    }
+    setReplyLoading(false);
+  };
 
   const filteredTickets = tickets.filter((t) => {
     const matchesSearch = !searchQuery ||
@@ -717,7 +785,7 @@ export default function AdminPage() {
                           </span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border">
+                      <div className="flex items-center gap-2 mt-3 pt-3 border-t border-border flex-wrap">
                         {ticket.status !== 'resolved' && ticket.status !== 'closed' && (
                           <>
                             <button
@@ -748,7 +816,53 @@ export default function AdminPage() {
                             Reopen
                           </button>
                         )}
+                        <button
+                          onClick={() => handleTicketExpand(ticket.id as string)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors ml-auto"
+                        >
+                          {expandedTicket === ticket.id ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+                          <MessageSquare className="h-3 w-3" />
+                          Reply
+                        </button>
                       </div>
+
+                      {expandedTicket === ticket.id && (
+                        <div className="mt-4 pt-4 border-t border-border space-y-3">
+                          {ticketReplies && ticketReplies.length > 0 ? (
+                            <div className="space-y-2 max-h-48 overflow-y-auto">
+                              {ticketReplies.map((reply) => (
+                                <div key={reply.id as string} className={`flex ${reply.sender_type === 'admin' ? 'justify-end' : 'justify-start'}`}>
+                                  <div className={`max-w-[80%] rounded-xl px-4 py-2.5 text-sm ${reply.sender_type === 'admin' ? 'bg-primary/10 border border-primary/20' : 'bg-muted/50 border border-border'}`}>
+                                    <p className="text-xs text-muted-foreground mb-1 capitalize">{reply.sender_type as string}</p>
+                                    <p>{reply.message as string}</p>
+                                    <p className="text-xs text-muted-foreground mt-1">{new Date(reply.created_at as string).toLocaleString()}</p>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="text-xs text-muted-foreground text-center py-2">No replies yet. Be the first to respond.</p>
+                          )}
+                          <div className="flex gap-2">
+                            <input
+                              type="text"
+                              value={replyText}
+                              onChange={(e) => setReplyText(e.target.value)}
+                              onKeyDown={(e) => e.key === 'Enter' && sendTicketReply(ticket.id as string)}
+                              placeholder="Type your reply..."
+                              className="flex-1 px-3 py-2 rounded-lg bg-background border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                            />
+                            <button
+                              onClick={() => sendTicketReply(ticket.id as string)}
+                              disabled={replyLoading || !replyText.trim()}
+                              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium disabled:opacity-50"
+                            >
+                              {replyLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+                              Send
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -791,6 +905,83 @@ export default function AdminPage() {
                               </span>
                             </td>
                             <td className="p-4 text-sm text-right text-muted-foreground">{new Date(inv.created_at as string).toLocaleDateString()}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'leads' && (
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h1 className="text-2xl font-semibold tracking-tight">Odoo CRM Leads</h1>
+                <button
+                  onClick={fetchLeads}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl liquid-glass-button text-sm font-medium"
+                >
+                  <RefreshCw className="h-4 w-4" /> Refresh
+                </button>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+                <div className="liquid-glass-card rounded-2xl p-4">
+                  <Users className="h-5 w-5 text-primary mb-2" />
+                  <p className="text-2xl font-bold">{leads.length}</p>
+                  <p className="text-xs text-muted-foreground">Total Leads</p>
+                </div>
+                <div className="liquid-glass-card rounded-2xl p-4">
+                  <TrendingUp className="h-5 w-5 text-green-500 mb-2" />
+                  <p className="text-2xl font-bold">{leads.filter((l) => (l.status as string) === 'new' || !(l.status as string)).length}</p>
+                  <p className="text-xs text-muted-foreground">New</p>
+                </div>
+                <div className="liquid-glass-card rounded-2xl p-4">
+                  <Check className="h-5 w-5 text-blue-500 mb-2" />
+                  <p className="text-2xl font-bold">{leads.filter((l) => (l.status as string) === 'contacted').length}</p>
+                  <p className="text-xs text-muted-foreground">Contacted</p>
+                </div>
+                <div className="liquid-glass-card rounded-2xl p-4">
+                  <DollarSign className="h-5 w-5 text-amber-500 mb-2" />
+                  <p className="text-2xl font-bold">{leads.filter((l) => (l.status as string) === 'qualified').length}</p>
+                  <p className="text-xs text-muted-foreground">Qualified</p>
+                </div>
+              </div>
+              {leads.length === 0 ? (
+                <div className="liquid-glass-card rounded-2xl p-12 text-center">
+                  <DbIcon className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
+                  <p className="text-sm text-muted-foreground">No leads synced yet. Leads from the website contact forms will appear here after syncing to Odoo CRM.</p>
+                </div>
+              ) : (
+                <div className="liquid-glass-card rounded-2xl overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-border">
+                          <th className="text-left p-4 text-xs font-semibold text-muted-foreground uppercase">Name</th>
+                          <th className="text-left p-4 text-xs font-semibold text-muted-foreground uppercase">Email</th>
+                          <th className="text-left p-4 text-xs font-semibold text-muted-foreground uppercase">Intent</th>
+                          <th className="text-left p-4 text-xs font-semibold text-muted-foreground uppercase">Company</th>
+                          <th className="text-center p-4 text-xs font-semibold text-muted-foreground uppercase">Status</th>
+                          <th className="text-right p-4 text-xs font-semibold text-muted-foreground uppercase">Date</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {leads.map((lead) => (
+                          <tr key={lead.id as string} className="border-b border-border/50 hover:bg-muted/20">
+                            <td className="p-4 text-sm font-medium">{(lead.full_name as string) || '—'}</td>
+                            <td className="p-4 text-sm text-muted-foreground">{(lead.work_email as string) || '—'}</td>
+                            <td className="p-4 text-sm">
+                              <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">{(lead.intent as string) || '—'}</span>
+                            </td>
+                            <td className="p-4 text-sm text-muted-foreground">{(lead.company as string) || '—'}</td>
+                            <td className="p-4 text-center">
+                              <span className={`text-xs px-2 py-0.5 rounded-full border ${statusColors[(lead.status as string) || 'draft'] || statusColors.draft}`}>
+                                {(lead.status as string) || 'new'}
+                              </span>
+                            </td>
+                            <td className="p-4 text-sm text-right text-muted-foreground">{lead.created_at ? new Date(lead.created_at as string).toLocaleDateString() : '—'}</td>
                           </tr>
                         ))}
                       </tbody>

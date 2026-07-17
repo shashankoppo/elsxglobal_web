@@ -190,12 +190,12 @@ export default function AdminLoginPage() {
             {needsSetup && !setupMode && (
               <div className="mt-4 pt-4 border-t border-border text-center">
                 <p className="text-sm text-muted-foreground mb-3">No admin account found yet?</p>
-                <button
-                  onClick={() => { setSetupMode(true); setError(''); }}
+                <Link
+                  href="/admin/setup"
                   className="text-sm text-primary hover:underline font-medium"
                 >
-                  Initialize Admin Account
-                </button>
+                  Initialize Master Admin Account
+                </Link>
               </div>
             )}
             {setupMode && (

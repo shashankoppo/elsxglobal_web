@@ -1,37 +1,45 @@
 import { cn } from '@/lib/utils';
 
+/**
+ * ELSxGlobal "ƎE" Logo
+ * A mirrored capital E (Ǝ) facing a standard capital E,
+ * forming an enterprise-grade monogram. Adapts to light/dark via currentColor.
+ */
 export function Logo({ className }: { className?: string }) {
   return (
     <svg
-      viewBox="0 0 40 40"
+      viewBox="0 0 48 32"
       fill="none"
-      className={cn(className)}
+      className={cn('text-primary', className)}
       aria-hidden="true"
+      xmlns="http://www.w3.org/2000/svg"
     >
-      <defs>
-        <linearGradient id="els-logo" x1="0" y1="0" x2="40" y2="40">
-          <stop offset="0%" stopColor="#3B82F6" />
-          <stop offset="50%" stopColor="#6366F1" />
-          <stop offset="100%" stopColor="#8B5CF6" />
-        </linearGradient>
-      </defs>
-      <rect
-        x="2"
-        y="2"
-        width="36"
-        height="36"
-        rx="10"
-        stroke="url(#els-logo)"
-        strokeWidth="1.5"
-        opacity="0.4"
-      />
-      <circle cx="20" cy="20" r="5" fill="url(#els-logo)" />
-      <circle cx="20" cy="20" r="9" stroke="url(#els-logo)" strokeWidth="1.2" opacity="0.5" />
-      <circle cx="20" cy="20" r="14" stroke="url(#els-logo)" strokeWidth="0.8" opacity="0.3" />
-      <circle cx="20" cy="6" r="1.6" fill="#3B82F6" />
-      <circle cx="34" cy="20" r="1.6" fill="#6366F1" />
-      <circle cx="20" cy="34" r="1.6" fill="#8B5CF6" />
-      <circle cx="6" cy="20" r="1.6" fill="#3B82F6" />
+      {/* Mirrored E (Ǝ) — left half */}
+      <g fill="currentColor">
+        {/* Top bar */}
+        <rect x="1" y="2" width="16" height="4" rx="1.5" />
+        {/* Middle bar */}
+        <rect x="5" y="14" width="12" height="3.5" rx="1.5" />
+        {/* Bottom bar */}
+        <rect x="1" y="26" width="16" height="4" rx="1.5" />
+        {/* Spine (right edge for mirrored E) */}
+        <rect x="13" y="2" width="4" height="28" rx="1.5" />
+      </g>
+
+      {/* Standard E — right half (mirrored copy for symmetry) */}
+      <g fill="currentColor" opacity="0.85">
+        {/* Top bar */}
+        <rect x="31" y="2" width="16" height="4" rx="1.5" />
+        {/* Middle bar */}
+        <rect x="31" y="14" width="12" height="3.5" rx="1.5" />
+        {/* Bottom bar */}
+        <rect x="31" y="26" width="16" height="4" rx="1.5" />
+        {/* Spine (left edge for standard E) */}
+        <rect x="31" y="2" width="4" height="28" rx="1.5" />
+      </g>
+
+      {/* Central accent dot — the "x" in ELSxGlobal */}
+      <circle cx="24" cy="16" r="2.5" fill="currentColor" />
     </svg>
   );
 }

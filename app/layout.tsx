@@ -112,7 +112,7 @@ export default function RootLayout({
         <LeadProvider>
           <PageLoader />
           <Navbar />
-          <main className="relative">{children}</main>
+          <main className="relative pt-24">{children}</main>
           <Footer />
           <LeadDialog />
           <EnterpriseAssistant />
