@@ -1,8 +1,1 @@
-{
-  "/portal/page": "app/portal/page.js",
-  "/services/page": "app/services/page.js",
-  "/portal/login/page": "app/portal/login/page.js",
-  "/portal/notifications/page": "app/portal/notifications/page.js",
-  "/vaulthost/vps/page": "app/vaulthost/vps/page.js",
-  "/vaulthost/checkout/page": "app/vaulthost/checkout/page.js"
-}
+{}

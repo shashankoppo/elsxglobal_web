@@ -1,104 +1,27 @@
-# ═══════════════════════════════════════════════════════════════════════════
-# ELSxGlobal - Docker Compose v2 Production Stack
-# Next.js + Nginx + Supabase Edge Functions
-# ═══════════════════════════════════════════════════════════════════════════
-
-version: '3.8'
+version: '3.9'
 
 services:
-  # ─────────────────────────────────────────────────────────────────────────
-  # Next.js Application (Static Export)
-  # ─────────────────────────────────────────────────────────────────────────
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      args:
-        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
-        NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY: ${NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY}
-        NEXT_PUBLIC_ODOO_URL: ${NEXT_PUBLIC_ODOO_URL}
-        NEXT_PUBLIC_ODOO_DB: ${NEXT_PUBLIC_ODOO_DB}
-    container_name: elsxglobal-web
-    ports:
-      - "3000:80"
-    environment:
-      - NODE_ENV=production
+  app:
+    build: .
+    container_name: vaulthost_app
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 5s
-    networks:
-      - elsxglobal-network
-    labels:
-      - "com.elsxglobal.service=web"
-      - "traefik.enable=true"
-      - "traefik.http.routers.elsxglobal.rule=Host(`elsxglobal.com`)"
-      - "traefik.http.routers.elsxglobal.tls=true"
-
-  # ─────────────────────────────────────────────────────────────────────────
-  # Nginx Reverse Proxy (Optional - for multi-domain or SSL)
-  # ─────────────────────────────────────────────────────────────────────────
-  nginx:
-    image: nginx:1.25-alpine
-    container_name: elsxglobal-nginx
     ports:
       - "80:80"
-      - "443:443"
-    volumes:
-      - ./docker/nginx-proxy.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./docker/ssl:/etc/nginx/ssl:ro
-      - nginx-cache:/var/cache/nginx
-    depends_on:
-      - web
-    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
+      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      - NEXT_PUBLIC_RAZORPAY_KEY_ID=${NEXT_PUBLIC_RAZORPAY_KEY_ID}
+    env_file: .env
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
     networks:
-      - elsxglobal-network
-    profiles:
-      - proxy
-
-  # ─────────────────────────────────────────────────────────────────────────
-  # Redis Cache (for ISR and session caching)
-  # ─────────────────────────────────────────────────────────────────────────
-  redis:
-    image: redis:7-alpine
-    container_name: elsxglobal-redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis-data:/data
-    restart: unless-stopped
-    networks:
-      - elsxglobal-network
-    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
-    profiles:
-      - cache
-
-  # ─────────────────────────────────────────────────────────────────────────
-  # Prometheus Metrics (optional monitoring)
-  # ─────────────────────────────────────────────────────────────────────────
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: elsxglobal-prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./docker/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus-data:/prometheus
-    restart: unless-stopped
-    networks:
-      - elsxglobal-network
-    profiles:
-      - monitoring
+      - vaulthost-network
 
 networks:
-  elsxglobal-network:
+  vaulthost-network:
     driver: bridge
-
-volumes:
-  nginx-cache:
-  redis-data:
-  prometheus-data:

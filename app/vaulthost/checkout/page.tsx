@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import { createMetadata } from '@/lib/seo';
-import CheckoutClient from './checkout-client';
+import { CheckoutClient } from './checkout-client';
 
 export const metadata: Metadata = createMetadata({
   title: 'Checkout — Secure Hosting Order | VaultHost',
@@ -16,5 +16,5 @@ export const metadata: Metadata = createMetadata({
 });
 
 export default function CheckoutPage() {
-  return <CheckoutClient />;
+  return <CheckoutClient planId="" />;
 }

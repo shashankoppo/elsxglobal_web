@@ -9,11 +9,12 @@ import {
   Loader2, Users, CreditCard, Package, DollarSign, TrendingUp,
   Check, X as XIcon, RefreshCw, Eye, ToggleLeft, ToggleRight,
   Plus, Search, AlertCircle,
-  ShieldCheck, ShoppingCart, Globe, Send, MessageSquare, Database as DbIcon, ChevronDown, ChevronRight
+  ShieldCheck, ShoppingCart, Globe, Send, MessageSquare, Database as DbIcon, ChevronDown, ChevronRight,
+  Wallet, Settings, Upload, EyeOff, Building2, BadgeCheck, Save, QrCode, Image as ImageIcon, Trash2, ExternalLink,
 } from 'lucide-react';
 import Link from 'next/link';
 
-type Tab = 'overview' | 'orders' | 'plans' | 'addons' | 'users' | 'tickets' | 'invoices' | 'leads';
+type Tab = 'overview' | 'orders' | 'plans' | 'addons' | 'users' | 'tickets' | 'invoices' | 'leads' | 'payments' | 'settings-payment' | 'settings-site';
 
 interface AdminInfo {
   email: string;
@@ -286,7 +287,10 @@ export default function AdminPage() {
     { id: 'users', label: 'Users', icon: Users },
     { id: 'tickets', label: 'Support', icon: LifeBuoy, badge: stats?.openTickets },
     { id: 'invoices', label: 'Invoices', icon: Receipt, badge: stats?.unpaidInvoices },
+    { id: 'payments', label: 'Payments', icon: Wallet },
     { id: 'leads', label: 'Odoo Leads', icon: DbIcon },
+    { id: 'settings-payment', label: 'Payment Settings', icon: CreditCard },
+    { id: 'settings-site', label: 'Site Settings', icon: Settings },
   ];
 
   const filteredOrders = orders.filter((o) => {
@@ -991,8 +995,740 @@ export default function AdminPage() {
               )}
             </div>
           )}
+
+          {activeTab === 'payments' && <PaymentsTab />}
+
+          {activeTab === 'settings-payment' && <PaymentSettingsTab />}
+
+          {activeTab === 'settings-site' && <SiteSettingsTab />}
         </main>
       </div>
     </div>
+  );
+}
+
+function PaymentsTab() {
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [proofModal, setProofModal] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from('transactions')
+        .select('*, hosting_orders(*)')
+        .order('created_at', { ascending: false })
+        .limit(100);
+      setTransactions(data || []);
+      setLoading(false);
+    };
+    fetchTransactions();
+  }, []);
+
+  const txStatusColors: Record<string, string> = {
+    success: 'bg-green-500/10 text-green-500 border-green-500/20',
+    pending: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
+    failed: 'bg-red-500/10 text-red-500 border-red-500/20',
+    initiated: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+    refunded: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Transaction Audit Log</h1>
+          <p className="text-sm text-muted-foreground">All payment transactions across all gateways</p>
+        </div>
+        <Wallet className="h-6 w-6 text-primary" />
+      </div>
+
+      {transactions.length === 0 ? (
+        <div className="liquid-glass-card rounded-2xl p-12 text-center">
+          <Wallet className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
+          <p className="text-sm text-muted-foreground">No transactions yet. Payments will appear here once customers start checking out.</p>
+        </div>
+      ) : (
+        <div className="liquid-glass-card rounded-2xl overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className="text-left p-4 text-xs font-semibold text-muted-foreground uppercase">Order ID</th>
+                  <th className="text-left p-4 text-xs font-semibold text-muted-foreground uppercase">Amount</th>
+                  <th className="text-left p-4 text-xs font-semibold text-muted-foreground uppercase">Gateway</th>
+                  <th className="text-left p-4 text-xs font-semibold text-muted-foreground uppercase">Status</th>
+                  <th className="text-left p-4 text-xs font-semibold text-muted-foreground uppercase">Date</th>
+                  <th className="text-right p-4 text-xs font-semibold text-muted-foreground uppercase">Proof</th>
+                </tr>
+              </thead>
+              <tbody>
+                {transactions.map((tx) => (
+                  <tr key={tx.id} className="border-b border-border/50 hover:bg-muted/20">
+                    <td className="p-4 text-sm font-mono">{tx.order_id ? (tx.order_id as string).slice(0, 8).toUpperCase() : '—'}</td>
+                    <td className="p-4 text-sm font-medium">Rs {(tx.amount as number)?.toLocaleString('en-IN')}</td>
+                    <td className="p-4 text-sm">
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-muted">{tx.gateway || '—'}</span>
+                    </td>
+                    <td className="p-4">
+                      <span className={`text-xs px-2 py-0.5 rounded-full border ${txStatusColors[tx.status] || txStatusColors.initiated}`}>
+                        {tx.status}
+                      </span>
+                    </td>
+                    <td className="p-4 text-sm text-muted-foreground">{new Date(tx.created_at).toLocaleDateString()}</td>
+                    <td className="p-4 text-right">
+                      {tx.metadata?.proof_url ? (
+                        <button
+                          onClick={() => setProofModal(tx.metadata.proof_url)}
+                          className="text-primary hover:underline text-sm"
+                        >
+                          View
+                        </button>
+                      ) : '—'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {proofModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+          onClick={() => setProofModal(null)}
+        >
+          <div className="max-w-2xl w-full" onClick={(e) => e.stopPropagation()}>
+            <div className="liquid-glass-strong rounded-3xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold">Payment Proof</h3>
+                <button onClick={() => setProofModal(null)} className="p-2 rounded-lg hover:bg-muted">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={proofModal} alt="Payment proof" className="w-full rounded-xl" />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PaymentSettingsTab() {
+  const [settings, setSettings] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [showSecret, setShowSecret] = useState(false);
+  const [uploadingQr, setUploadingQr] = useState(false);
+  const [saveMsg, setSaveMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from('payment_settings')
+        .select('*')
+        .eq('id', 1)
+        .maybeSingle();
+      setSettings(data || {
+        razorpay_enabled: false,
+        razorpay_key_id: '',
+        razorpay_key_secret: '',
+        razorpay_mode: 'sandbox',
+        upi_enabled: true,
+        upi_id: '',
+        upi_display_name: 'ELSxGlobal',
+        bank_transfer_enabled: false,
+        bank_details: {},
+        custom_qr_image_url: '',
+      });
+      setLoading(false);
+    };
+    fetchSettings();
+  }, []);
+
+  const handleSave = async () => {
+    setSaving(true);
+    setSaveMsg(null);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase
+        .from('payment_settings')
+        .upsert({
+          id: 1,
+          ...settings,
+          updated_at: new Date().toISOString(),
+        });
+      if (error) throw error;
+      setSaveMsg('Payment settings saved successfully');
+      setTimeout(() => setSaveMsg(null), 3000);
+    } catch (err) {
+      setSaveMsg(`Error: ${err instanceof Error ? err.message : 'Save failed'}`);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleQrUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      setSaveMsg('QR image too large. Maximum 2MB.');
+      return;
+    }
+    setUploadingQr(true);
+    try {
+      const supabase = createClient();
+      const ext = file.name.split('.').pop();
+      const fileName = `custom-qr-${Date.now()}.${ext}`;
+      const { data, error } = await supabase.storage
+        .from('qr-uploads')
+        .upload(fileName, file, { cacheControl: '3600', upsert: true });
+      if (error) throw error;
+      const { data: urlData } = supabase.storage.from('qr-uploads').getPublicUrl(data.path);
+      setSettings({ ...settings, custom_qr_image_url: urlData.publicUrl });
+      setSaveMsg('Custom QR uploaded. Click Save to apply.');
+    } catch (err) {
+      setSaveMsg(`Upload failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setUploadingQr(false);
+    }
+  };
+
+  const removeCustomQr = () => {
+    setSettings({ ...settings, custom_qr_image_url: '' });
+    setSaveMsg('Custom QR removed. Click Save to apply.');
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  const razorpayConnected = settings.razorpay_enabled && settings.razorpay_key_id;
+
+  return (
+    <div className="max-w-3xl">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Payment Gateway Configuration</h1>
+          <p className="text-sm text-muted-foreground">Configure Razorpay, UPI, and bank transfer payment methods</p>
+        </div>
+        <CreditCard className="h-6 w-6 text-primary" />
+      </div>
+
+      {saveMsg && (
+        <div className="liquid-glass rounded-xl p-3 mb-6 text-sm border-primary/20 bg-primary/5">
+          {saveMsg}
+        </div>
+      )}
+
+      {/* Razorpay */}
+      <div className="liquid-glass-card rounded-2xl p-6 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 border border-blue-500/20">
+              <CreditCard className="h-5 w-5 text-blue-500" />
+            </div>
+            <div>
+              <h3 className="font-semibold">Razorpay</h3>
+              <p className="text-xs text-muted-foreground">
+                {razorpayConnected ? 'Connected' : 'Not configured'}
+              </p>
+            </div>
+          </div>
+          <ToggleSwitch
+            checked={settings.razorpay_enabled}
+            onChange={(v) => setSettings({ ...settings, razorpay_enabled: v })}
+          />
+        </div>
+
+        {settings.razorpay_enabled && (
+          <div className="space-y-4 mt-4 pt-4 border-t border-border">
+            <div>
+              <label className="text-sm font-medium mb-1.5 block">Mode</label>
+              <div className="flex gap-2">
+                {['sandbox', 'live'].map((mode) => (
+                  <button
+                    key={mode}
+                    onClick={() => setSettings({ ...settings, razorpay_mode: mode })}
+                    className={`px-4 py-2 rounded-xl text-sm font-medium capitalize ${settings.razorpay_mode === mode ? 'bg-primary text-primary-foreground' : 'liquid-glass'}`}
+                  >
+                    {mode}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1.5 block">Key ID</label>
+              <input
+                type="text"
+                value={settings.razorpay_key_id || ''}
+                onChange={(e) => setSettings({ ...settings, razorpay_key_id: e.target.value })}
+                placeholder="rzp_test_xxxxxxxxxxxx"
+                className="w-full px-4 py-2.5 rounded-xl bg-background border border-border text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/20"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1.5 block">Key Secret</label>
+              <div className="relative">
+                <input
+                  type={showSecret ? 'text' : 'password'}
+                  value={settings.razorpay_key_secret || ''}
+                  onChange={(e) => setSettings({ ...settings, razorpay_key_secret: e.target.value })}
+                  placeholder="••••••••••••••••"
+                  className="w-full px-4 py-2.5 pr-10 rounded-xl bg-background border border-border text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/20"
+                />
+                <button
+                  onClick={() => setShowSecret(!showSecret)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showSecret ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* UPI / Manual QR */}
+      <div className="liquid-glass-card rounded-2xl p-6 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-500/10 border border-green-500/20">
+              <QrCode className="h-5 w-5 text-green-500" />
+            </div>
+            <div>
+              <h3 className="font-semibold">UPI / Manual QR</h3>
+              <p className="text-xs text-muted-foreground">Dynamic UPI QR with manual verification</p>
+            </div>
+          </div>
+          <ToggleSwitch
+            checked={settings.upi_enabled}
+            onChange={(v) => setSettings({ ...settings, upi_enabled: v })}
+          />
+        </div>
+
+        {settings.upi_enabled && (
+          <div className="space-y-4 mt-4 pt-4 border-t border-border">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-1.5 block">UPI ID</label>
+                <input
+                  type="text"
+                  value={settings.upi_id || ''}
+                  onChange={(e) => setSettings({ ...settings, upi_id: e.target.value })}
+                  placeholder="business@axisbank"
+                  className="w-full px-4 py-2.5 rounded-xl bg-background border border-border text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1.5 block">Display Name</label>
+                <input
+                  type="text"
+                  value={settings.upi_display_name || ''}
+                  onChange={(e) => setSettings({ ...settings, upi_display_name: e.target.value })}
+                  placeholder="ELSxGlobal"
+                  className="w-full px-4 py-2.5 rounded-xl bg-background border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-2 block">Custom QR Image (overrides dynamic QR)</label>
+              {settings.custom_qr_image_url ? (
+                <div className="flex items-center gap-4">
+                  <div className="w-24 h-24 rounded-xl overflow-hidden bg-white border border-border">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={settings.custom_qr_image_url} alt="Custom QR" className="w-full h-full object-contain" />
+                  </div>
+                  <button
+                    onClick={removeCustomQr}
+                    className="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-sm text-red-500 hover:bg-red-500/10"
+                  >
+                    <Trash2 className="h-4 w-4" /> Remove
+                  </button>
+                </div>
+              ) : (
+                <label className="flex flex-col items-center justify-center w-full h-32 rounded-xl border-2 border-dashed border-border hover:border-primary/50 cursor-pointer transition-colors">
+                  <div className="flex flex-col items-center gap-2">
+                    {uploadingQr ? (
+                      <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                    ) : (
+                      <Upload className="h-6 w-6 text-muted-foreground" />
+                    )}
+                    <span className="text-xs text-muted-foreground">
+                      {uploadingQr ? 'Uploading...' : 'Upload custom QR (PNG/JPEG, max 2MB)'}
+                    </span>
+                  </div>
+                  <input type="file" accept="image/*" onChange={handleQrUpload} className="hidden" disabled={uploadingQr} />
+                </label>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Bank Transfer */}
+      <div className="liquid-glass-card rounded-2xl p-6 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 border border-amber-500/20">
+              <Building2 className="h-5 w-5 text-amber-500" />
+            </div>
+            <div>
+              <h3 className="font-semibold">Bank Transfer</h3>
+              <p className="text-xs text-muted-foreground">Manual bank transfer with proof upload</p>
+            </div>
+          </div>
+          <ToggleSwitch
+            checked={settings.bank_transfer_enabled}
+            onChange={(v) => setSettings({ ...settings, bank_transfer_enabled: v })}
+          />
+        </div>
+
+        {settings.bank_transfer_enabled && (
+          <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-border">
+            <div>
+              <label className="text-sm font-medium mb-1.5 block">Account Name</label>
+              <input
+                type="text"
+                value={settings.bank_details?.account_name || ''}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  bank_details: { ...settings.bank_details, account_name: e.target.value },
+                })}
+                placeholder="ELSxGlobal Pvt Ltd"
+                className="w-full px-4 py-2.5 rounded-xl bg-background border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1.5 block">Account Number</label>
+              <input
+                type="text"
+                value={settings.bank_details?.account_number || ''}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  bank_details: { ...settings.bank_details, account_number: e.target.value },
+                })}
+                placeholder="0000000000000000"
+                className="w-full px-4 py-2.5 rounded-xl bg-background border border-border text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/20"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1.5 block">IFSC Code</label>
+              <input
+                type="text"
+                value={settings.bank_details?.ifsc || ''}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  bank_details: { ...settings.bank_details, ifsc: e.target.value },
+                })}
+                placeholder="AXIS0000000"
+                className="w-full px-4 py-2.5 rounded-xl bg-background border border-border text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/20"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-1.5 block">Bank Name</label>
+              <input
+                type="text"
+                value={settings.bank_details?.bank_name || ''}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  bank_details: { ...settings.bank_details, bank_name: e.target.value },
+                })}
+                placeholder="Axis Bank"
+                className="w-full px-4 py-2.5 rounded-xl bg-background border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+              />
+            </div>
+          </div>
+        )}
+      </div>
+
+      <button
+        onClick={handleSave}
+        disabled={saving}
+        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 disabled:opacity-50"
+      >
+        {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+        Save Payment Settings
+      </button>
+    </div>
+  );
+}
+
+function SiteSettingsTab() {
+  const [settings, setSettings] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saveMsg, setSaveMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from('site_settings')
+        .select('*')
+        .eq('id', 1)
+        .maybeSingle();
+      setSettings(data || {
+        org_name: 'EvolucentSphere',
+        tagline: 'Enterprise Technology Solutions',
+        support_email: 'contact@elsxglobal.com',
+        support_phone: '+917247558873',
+        trust_badges: [],
+      });
+      setLoading(false);
+    };
+    fetchSettings();
+  }, []);
+
+  const handleSave = async () => {
+    setSaving(true);
+    setSaveMsg(null);
+    try {
+      const supabase = createClient();
+      const { error } = await supabase
+        .from('site_settings')
+        .upsert({
+          id: 1,
+          ...settings,
+          updated_at: new Date().toISOString(),
+        });
+      if (error) throw error;
+      setSaveMsg('Site settings saved successfully');
+      setTimeout(() => setSaveMsg(null), 3000);
+    } catch (err) {
+      setSaveMsg(`Error: ${err instanceof Error ? err.message : 'Save failed'}`);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const updateBadge = (idx: number, field: string, value: any) => {
+    const badges = [...(settings.trust_badges || [])];
+    badges[idx] = { ...badges[idx], [field]: value };
+    setSettings({ ...settings, trust_badges: badges });
+  };
+
+  const addBadge = () => {
+    const badges = [...(settings.trust_badges || [])];
+    badges.push({
+      id: `badge-${Date.now()}`,
+      name: 'New Badge',
+      logo_url: '',
+      verify_url: '',
+      verified: false,
+      display: false,
+    });
+    setSettings({ ...settings, trust_badges: badges });
+  };
+
+  const removeBadge = (idx: number) => {
+    const badges = [...(settings.trust_badges || [])];
+    badges.splice(idx, 1);
+    setSettings({ ...settings, trust_badges: badges });
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-24">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-3xl">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Site Settings</h1>
+          <p className="text-sm text-muted-foreground">Organization metadata and trust badge management</p>
+        </div>
+        <Settings className="h-6 w-6 text-primary" />
+      </div>
+
+      {saveMsg && (
+        <div className="liquid-glass rounded-xl p-3 mb-6 text-sm border-primary/20 bg-primary/5">
+          {saveMsg}
+        </div>
+      )}
+
+      {/* Org Metadata */}
+      <div className="liquid-glass-card rounded-2xl p-6 mb-6">
+        <h3 className="font-semibold mb-4">Organization Metadata</h3>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="text-sm font-medium mb-1.5 block">Organization Name</label>
+            <input
+              type="text"
+              value={settings.org_name || ''}
+              onChange={(e) => setSettings({ ...settings, org_name: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-xl bg-background border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium mb-1.5 block">Tagline</label>
+            <input
+              type="text"
+              value={settings.tagline || ''}
+              onChange={(e) => setSettings({ ...settings, tagline: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-xl bg-background border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium mb-1.5 block">Support Email</label>
+            <input
+              type="email"
+              value={settings.support_email || ''}
+              onChange={(e) => setSettings({ ...settings, support_email: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-xl bg-background border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+          <div>
+            <label className="text-sm font-medium mb-1.5 block">Support Phone</label>
+            <input
+              type="text"
+              value={settings.support_phone || ''}
+              onChange={(e) => setSettings({ ...settings, support_phone: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-xl bg-background border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Trust Badges */}
+      <div className="liquid-glass-card rounded-2xl p-6 mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="font-semibold">Trust Badges</h3>
+            <p className="text-xs text-muted-foreground">Only badges with Verified + Display enabled appear on the public site</p>
+          </div>
+          <button
+            onClick={addBadge}
+            className="inline-flex items-center gap-2 px-3 py-2 rounded-xl liquid-glass-button text-sm"
+          >
+            <Plus className="h-4 w-4" /> Add Badge
+          </button>
+        </div>
+
+        <div className="space-y-3">
+          {(settings.trust_badges || []).map((badge: any, idx: number) => (
+            <div key={badge.id} className="liquid-glass rounded-xl p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 border border-primary/20">
+                    {badge.logo_url ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img src={badge.logo_url} alt={badge.name} className="h-6 w-6 object-contain" />
+                    ) : (
+                      <BadgeCheck className="h-5 w-5 text-primary" />
+                    )}
+                  </div>
+                  <input
+                    type="text"
+                    value={badge.name}
+                    onChange={(e) => updateBadge(idx, 'name', e.target.value)}
+                    className="px-3 py-1.5 rounded-lg bg-background border border-border text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  />
+                </div>
+                <button
+                  onClick={() => removeBadge(idx)}
+                  className="p-2 rounded-lg text-red-500 hover:bg-red-500/10"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 mb-3">
+                <input
+                  type="text"
+                  value={badge.logo_url || ''}
+                  onChange={(e) => updateBadge(idx, 'logo_url', e.target.value)}
+                  placeholder="Logo URL"
+                  className="px-3 py-1.5 rounded-lg bg-background border border-border text-xs font-mono focus:outline-none focus:ring-2 focus:ring-primary/20"
+                />
+                <input
+                  type="text"
+                  value={badge.verify_url || ''}
+                  onChange={(e) => updateBadge(idx, 'verify_url', e.target.value)}
+                  placeholder="Verification URL"
+                  className="px-3 py-1.5 rounded-lg bg-background border border-border text-xs font-mono focus:outline-none focus:ring-2 focus:ring-primary/20"
+                />
+              </div>
+
+              <div className="flex items-center gap-4">
+                <label className="flex items-center gap-2 text-sm">
+                  <ToggleSwitch
+                    checked={badge.verified}
+                    onChange={(v) => updateBadge(idx, 'verified', v)}
+                    small
+                  />
+                  Verified
+                </label>
+                <label className="flex items-center gap-2 text-sm">
+                  <ToggleSwitch
+                    checked={badge.display}
+                    onChange={(v) => updateBadge(idx, 'display', v)}
+                    small
+                  />
+                  Display on site
+                </label>
+                {badge.verify_url && (
+                  <a
+                    href={badge.verify_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="ml-auto text-xs text-primary hover:underline flex items-center gap-1"
+                  >
+                    Verify <ExternalLink className="h-3 w-3" />
+                  </a>
+                )}
+              </div>
+            </div>
+          ))}
+          {(!settings.trust_badges || settings.trust_badges.length === 0) && (
+            <p className="text-sm text-muted-foreground text-center py-8">No trust badges configured. Click "Add Badge" to create one.</p>
+          )}
+        </div>
+      </div>
+
+      <button
+        onClick={handleSave}
+        disabled={saving}
+        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 disabled:opacity-50"
+      >
+        {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+        Save Site Settings
+      </button>
+    </div>
+  );
+}
+
+function ToggleSwitch({ checked, onChange, small }: { checked: boolean; onChange: (v: boolean) => void; small?: boolean }) {
+  return (
+    <button
+      onClick={() => onChange(!checked)}
+      className={`relative ${small ? 'h-5 w-9' : 'h-6 w-11'} rounded-full transition-colors ${checked ? 'bg-primary' : 'bg-muted'}`}
+    >
+      <span
+        className={`absolute top-0.5 ${small ? 'h-4 w-4' : 'h-5 w-5'} rounded-full bg-white shadow transition-transform ${checked ? (small ? 'translate-x-4' : 'translate-x-5') : 'translate-x-0.5'}`}
+      />
+    </button>
   );
 }
